@@ -1,0 +1,16 @@
+TI OpenMAX Integration Layer project
+
+This is a TI implementation of the  of the OpenMAX Integration Layer
+(IL) API, specified by the Khronos group (see http://www.khronos.org/openmax).
+
+This branch is composed of:
+- audio component(s)
+  - OMX audio decoder
+- system component(s)
+  - OMX Core
+  - LCML (Linux Common Multimedia Library)
+  - OMX Base (OMX base component)
+  - OSAL (Operating system abstraction layer API)
+
+The system components, Core and LCML, are provided only as a reference.
+More audio components will be added soon.
