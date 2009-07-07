@@ -1484,7 +1484,7 @@ OMX_ERRORTYPE OMX_AUDIO_DEC_DataNotify( OMX_HANDLETYPE hComponent,
                 OMX_BASE_ASSERT(pInBufHeader != NULL,
                                 OMX_ErrorInsufficientResources);
 
-                if ((pInBufHeader->nFilledLen <= 0)&&(pInBufHeader->nFlags != OMX_BUFFERFLAG_EOS)){
+                if ((pInBufHeader->nFilledLen <= 0)&&(!(pInBufHeader->nFlags & OMX_BUFFERFLAG_EOS))){
                     /*if the buffer contains no data then need to bypass the DSP by just calling returndatanotify call*/
                     pComponentPrivate->bBypassDSP = 1;
                     AUDIODEC_DPRINT("\n return data notify for filledlen=0 i/p buffer\n");
@@ -1498,10 +1498,10 @@ OMX_ERRORTYPE OMX_AUDIO_DEC_DataNotify( OMX_HANDLETYPE hComponent,
                     /*get the aux info from the buffer flags*/
                     pIpParam->bLastBuffer = 0;
                     pIpParam->bConcealBuffer = 0;/*not checked the conditon yet*/
-                    if(pInBufHeader->nFlags == OMX_BUFFERFLAG_EOS){
+                    if(pInBufHeader->nFlags & OMX_BUFFERFLAG_EOS){
                         pIpParam->bLastBuffer = 1; /*this is sent to the codec as auxilary information*/
                     }
-                    if (pInBufHeader->nFlags == OMX_BUFFERFLAG_DATACORRUPT){
+                    if (pInBufHeader->nFlags & OMX_BUFFERFLAG_DATACORRUPT){
                         pIpParam->bConcealBuffer = 1;
                     }
                     /*????????not sure whether it is required or not ... set the codec with the required params for the next one buffer after the EOS buffer*/
@@ -1521,7 +1521,7 @@ OMX_ERRORTYPE OMX_AUDIO_DEC_DataNotify( OMX_HANDLETYPE hComponent,
                       }
                     */
                     /*if received EOS then need to notify to the corresponding o/p buffer*/
-                    if(pInBufHeader->nFlags |= OMX_BUFFERFLAG_EOS) {
+                    if(pInBufHeader->nFlags & OMX_BUFFERFLAG_EOS) {
                         AUDIODEC_DPRINT("\n EOS at i/p buffer\n");
                         pComponentPrivate->bIsEOFSent = 1;/*need to send this to the next output buffer that comes for processing*/
                         pInBufHeader->nFlags = 0;
@@ -1732,7 +1732,7 @@ OMX_ERRORTYPE OMX_AUDIO_DEC_LCML_Callback (TUsnCodecEvent event,void * args [10]
             }
             pOutBufHeader->nFilledLen = (int)args[8];
             /*if the EOS is received then notify it to the base via eventnotify call*/
-            if (pOutBufHeader->nFlags == OMX_BUFFERFLAG_EOS){
+            if (pOutBufHeader->nFlags & OMX_BUFFERFLAG_EOS){
                 /* Note: Notify this completion to the Base comp via ReturnEventNotify call */
                 AUDIODEC_DPRINT("\nevent notify to the base:EOS at o/p buffer at LCML call back\n");
                 pComponentPrivate->fpReturnEventNotify(pComponentPrivate->pHandle, OMX_EventBufferFlag,OUTPUT_PORT,pOutBufHeader->nFlags, NULL);
