@@ -1424,6 +1424,7 @@ OMX_ERRORTYPE OMX_AUDIO_DEC_DataNotify( OMX_HANDLETYPE hComponent,
     TIMM_OSAL_U32 elementsInPipe = 0;
     TIMM_OSAL_U32 elementsOutPipe = 0;
     OMX_ERRORTYPE inStatus, outStatus;
+    char* pTemp_char = NULL;
 
     /*check i/p parameters*/
     OMX_BASE_REQUIRE((hComponent != NULL), OMX_ErrorBadParameter);
@@ -1493,8 +1494,14 @@ OMX_ERRORTYPE OMX_AUDIO_DEC_DataNotify( OMX_HANDLETYPE hComponent,
                 }
                 else{
                     /*allocate memory for inauxiinfo*/
-                    pIpParam = (UAlgInBufParamStruct*)TIMM_OSAL_Malloc(sizeof(UAlgInBufParamStruct));
+                    pIpParam = (UAlgInBufParamStruct*)TIMM_OSAL_Malloc(sizeof(UAlgInBufParamStruct) +
+                                                                   DSP_CACHE_ALIGNMENT);
                     OMX_BASE_ASSERT(pIpParam != NULL,OMX_ErrorInsufficientResources);
+
+                    pTemp_char = (char*)pIpParam;
+                    pTemp_char += EXTRA_BYTES;
+                    pIpParam = (UAlgInBufParamStruct*)pTemp_char;
+
                     /*get the aux info from the buffer flags*/
                     pIpParam->bLastBuffer = 0;
                     pIpParam->bConcealBuffer = 0;/*not checked the conditon yet*/
@@ -1609,8 +1616,13 @@ OMX_ERRORTYPE OMX_AUDIO_DEC_DataNotify( OMX_HANDLETYPE hComponent,
                     pComponentPrivate->bIsEOFSent =0;
                 }
                 if (pComponentPrivate->bBypassDSP == 0) {
-                    pOpParam = (UAlgOutBufParamStruct*)TIMM_OSAL_Malloc(sizeof(UAlgOutBufParamStruct));
+                    pOpParam = (UAlgOutBufParamStruct*)TIMM_OSAL_Malloc(sizeof(UAlgOutBufParamStruct) +
+                                                                        DSP_CACHE_ALIGNMENT);
                     OMX_BASE_ASSERT(pOpParam != NULL,OMX_ErrorInsufficientResources);
+
+                    pTemp_char = (char*)pOpParam;
+                    pTemp_char += EXTRA_BYTES;
+                    pOpParam = (UAlgOutBufParamStruct*)pTemp_char;
 
                     /*frame count:pOpParam->ulFrameCount is always set to zero*/
                     pOpParam->ulFrameCount=0;
