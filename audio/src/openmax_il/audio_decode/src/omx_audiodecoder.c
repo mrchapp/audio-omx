@@ -399,6 +399,25 @@ OMX_ERRORTYPE OMX_ComponentInit(OMX_HANDLETYPE hComponent)
     pComponentPrivate->LCMLParams->pParams =
                                          (USN_AudioCodecParams*)pTemp_char;
 
+    /*allocate memory for inauxiinfo*/
+    pComponentPrivate->pIpParam = (UAlgInBufParamStruct*)TIMM_OSAL_Malloc(sizeof(UAlgInBufParamStruct) +
+                                                       DSP_CACHE_ALIGNMENT);
+    OMX_BASE_ASSERT(pComponentPrivate->pIpParam != NULL,OMX_ErrorInsufficientResources);
+
+    pTemp_char = (char*)pComponentPrivate->pIpParam;
+    pTemp_char += EXTRA_BYTES;
+    pComponentPrivate->pIpParam = (UAlgInBufParamStruct*)pTemp_char;
+    pComponentPrivate->pIpParam->bLastBuffer = 0;
+    pComponentPrivate->pIpParam->bConcealBuffer = 0;/*not checked the conditon yet*/
+
+    pComponentPrivate->pOpParam = (UAlgOutBufParamStruct*)TIMM_OSAL_Malloc(sizeof(UAlgOutBufParamStruct) +
+                                                        DSP_CACHE_ALIGNMENT);
+    OMX_BASE_ASSERT(pComponentPrivate->pOpParam != NULL,OMX_ErrorInsufficientResources);
+    pTemp_char = (char*)pComponentPrivate->pOpParam;
+    pTemp_char += EXTRA_BYTES;
+    pComponentPrivate->pOpParam = (UAlgOutBufParamStruct*)pTemp_char;
+    pComponentPrivate->pOpParam->ulFrameCount = 0;
+
     /*create LCML pipes for*/
     /*i/p buffers pending with lcml*/
     bReturnStatus = TIMM_OSAL_CreatePipe
@@ -1414,9 +1433,6 @@ OMX_ERRORTYPE OMX_AUDIO_DEC_DataNotify( OMX_HANDLETYPE hComponent,
 {
     OMX_ERRORTYPE tError = OMX_ErrorNone;
     AUDIODEC_COMPONENT_PRIVATE  *pComponentPrivate= NULL;
-    /*pointers to the auxilary info of the buffer that need to be sent to the LCML*/
-    UAlgInBufParamStruct* pIpParam=NULL;
-    UAlgOutBufParamStruct* pOpParam=NULL;
     /*for pipes processing*/
     OMX_BUFFERHEADERTYPE* pInBufHeader = NULL;
     OMX_BUFFERHEADERTYPE* pOutBufHeader = NULL;
@@ -1424,7 +1440,6 @@ OMX_ERRORTYPE OMX_AUDIO_DEC_DataNotify( OMX_HANDLETYPE hComponent,
     TIMM_OSAL_U32 elementsInPipe = 0;
     TIMM_OSAL_U32 elementsOutPipe = 0;
     OMX_ERRORTYPE inStatus, outStatus;
-    char* pTemp_char = NULL;
 
     /*check i/p parameters*/
     OMX_BASE_REQUIRE((hComponent != NULL), OMX_ErrorBadParameter);
@@ -1493,23 +1508,14 @@ OMX_ERRORTYPE OMX_AUDIO_DEC_DataNotify( OMX_HANDLETYPE hComponent,
 
                 }
                 else{
-                    /*allocate memory for inauxiinfo*/
-                    pIpParam = (UAlgInBufParamStruct*)TIMM_OSAL_Malloc(sizeof(UAlgInBufParamStruct) +
-                                                                   DSP_CACHE_ALIGNMENT);
-                    OMX_BASE_ASSERT(pIpParam != NULL,OMX_ErrorInsufficientResources);
-
-                    pTemp_char = (char*)pIpParam;
-                    pTemp_char += EXTRA_BYTES;
-                    pIpParam = (UAlgInBufParamStruct*)pTemp_char;
-
                     /*get the aux info from the buffer flags*/
-                    pIpParam->bLastBuffer = 0;
-                    pIpParam->bConcealBuffer = 0;/*not checked the conditon yet*/
+                    pComponentPrivate->pIpParam->bLastBuffer = 0;
+                    pComponentPrivate->pIpParam->bConcealBuffer = 0;
                     if(pInBufHeader->nFlags & OMX_BUFFERFLAG_EOS){
-                        pIpParam->bLastBuffer = 1; /*this is sent to the codec as auxilary information*/
+                        pComponentPrivate->pIpParam->bLastBuffer = 1; /*this is sent to the codec as auxilary information*/
                     }
                     if (pInBufHeader->nFlags & OMX_BUFFERFLAG_DATACORRUPT){
-                        pIpParam->bConcealBuffer = 1;
+                        pComponentPrivate->pIpParam->bConcealBuffer = 1;
                     }
                     /*????????not sure whether it is required or not ... set the codec with the required params for the next one buffer after the EOS buffer*/
                     /*not sure whether this condition is necessary or not*/
@@ -1564,7 +1570,7 @@ OMX_ERRORTYPE OMX_AUDIO_DEC_DataNotify( OMX_HANDLETYPE hComponent,
                                               pInBufHeader->pBuffer,
                                               pInBufHeader->nAllocLen,
                                               pInBufHeader->nFilledLen,
-                                              (OMX_U8 *)pIpParam,
+                                              (OMX_U8 *)pComponentPrivate->pIpParam,
                                               sizeof(UAlgInBufParamStruct),
                                               NULL);
                     if (tError != OMX_ErrorNone) {
@@ -1615,17 +1621,10 @@ OMX_ERRORTYPE OMX_AUDIO_DEC_DataNotify( OMX_HANDLETYPE hComponent,
                     pOutBufHeader->nFlags |= OMX_BUFFERFLAG_EOS;
                     pComponentPrivate->bIsEOFSent =0;
                 }
+
                 if (pComponentPrivate->bBypassDSP == 0) {
-                    pOpParam = (UAlgOutBufParamStruct*)TIMM_OSAL_Malloc(sizeof(UAlgOutBufParamStruct) +
-                                                                        DSP_CACHE_ALIGNMENT);
-                    OMX_BASE_ASSERT(pOpParam != NULL,OMX_ErrorInsufficientResources);
-
-                    pTemp_char = (char*)pOpParam;
-                    pTemp_char += EXTRA_BYTES;
-                    pOpParam = (UAlgOutBufParamStruct*)pTemp_char;
-
                     /*frame count:pOpParam->ulFrameCount is always set to zero*/
-                    pOpParam->ulFrameCount=0;
+                    pComponentPrivate->pOpParam->ulFrameCount = 0;
                     /*queueup  the buffers the we r going to send to the LCML in LCMLpipe*/
                     AUDIODEC_DPRINT("\n keeping the LCMLsent o/p buffers in LCMLo/ppedndingqueue \n");
                     tError = (OMX_ERRORTYPE)TIMM_OSAL_WriteToPipe((pComponentPrivate-> LCMLParams->pOutBufPendingWithLcmlPipe),
@@ -1639,7 +1638,7 @@ OMX_ERRORTYPE OMX_AUDIO_DEC_DataNotify( OMX_HANDLETYPE hComponent,
                                               pOutBufHeader->pBuffer,
                                               pOutBufHeader->nAllocLen,
                                               0,
-                                              (OMX_U8 *)pOpParam,
+                                              (OMX_U8 *)pComponentPrivate->pOpParam,
                                               sizeof(UAlgOutBufParamStruct),
                                               pOutBufHeader->pBuffer);
                     if (tError != OMX_ErrorNone ) {
@@ -1869,7 +1868,6 @@ OMX_ERRORTYPE OMX_AUDIO_DEC_LCML_Callback (TUsnCodecEvent event,void * args [10]
                pComponentPrivate->codec_params.aacdecParams->aacParams->eAACProfile != OMX_AUDIO_AACObjectHE_PS){
 
                 pComponentPrivate->codec_params.aacdecParams->aacParams->eAACProfile = OMX_AUDIO_AACObjectHE;
-                pComponentPrivate->codec_params.aacdecParams->AACDEC_UALGParam->nProfile = OMX_AUDIO_AACObjectHE;
                 pComponentPrivate->codec_params.aacdecParams->AACDEC_UALGParam->iEnablePS =  0;
                 pComponentPrivate->codec_params.aacdecParams->AACDEC_UALGParam->DownSampleSbr = 1;
 
@@ -1897,7 +1895,6 @@ OMX_ERRORTYPE OMX_AUDIO_DEC_LCML_Callback (TUsnCodecEvent event,void * args [10]
         if ( ( (int)args[4] == USN_ERR_WARNING ) && ( (int)args[5] == AACDEC_PS_CONTENT )){
             if(pComponentPrivate->codec_params.aacdecParams->aacParams->eAACProfile != OMX_AUDIO_AACObjectHE_PS){
                 pComponentPrivate->codec_params.aacdecParams->aacParams->eAACProfile = OMX_AUDIO_AACObjectHE_PS;
-                pComponentPrivate->codec_params.aacdecParams->AACDEC_UALGParam->nProfile = OMX_AUDIO_AACObjectHE_PS;
                 pComponentPrivate->codec_params.aacdecParams->AACDEC_UALGParam->iEnablePS =  1;
                 pComponentPrivate->codec_params.aacdecParams->AACDEC_UALGParam->DownSampleSbr = 1;
 
@@ -2155,7 +2152,7 @@ static OMX_ERRORTYPE OMX_AUDIO_DEC_ComponentDeInit(OMX_HANDLETYPE pHandle)
     AUDIODEC_DPRINT("\nfree the common params\n");
 
     AUDIODEC_DPRINT("\ncall to LCML Deinit\n");
-	if((pComponentPrivate->tCurState!=OMX_StateLoaded)&&(pComponentPrivate->tCurState!=OMX_StateInvalid))
+    //if((pComponentPrivate->tCurState!=OMX_StateLoaded)&&(pComponentPrivate->tCurState!=OMX_StateInvalid))
     tError=OMX_LCML_DeInit(pHandle);/*LCML specific params are deleted*/
     if(tError!=OMX_ErrorNone){
         AUDIODEC_DPRINT("\nerror in LCMLDeinit\n");
@@ -2302,6 +2299,25 @@ OMX_ERRORTYPE OMX_LCML_DeInit(OMX_HANDLETYPE pComponent)
     pComponentPrivate->LCMLParams->pParams = (USN_AudioCodecParams*)pTemp;
     TIMM_OSAL_Free(pComponentPrivate->LCMLParams->pParams);
     AUDIODEC_DPRINT("\nfreeup LCMLParams->Pparams done\n");
+
+    /*free up the pIpParam*/
+    pTemp = (char*)pComponentPrivate->pIpParam;
+    if (pTemp != NULL) {
+        pTemp -= EXTRA_BYTES;
+    }
+    pComponentPrivate->pIpParam = (UAlgInBufParamStruct*)pTemp;
+    TIMM_OSAL_Free(pComponentPrivate->pIpParam);
+    AUDIODEC_DPRINT("\nfreeup LCMLParams->pIpParam done\n");
+
+    /*free up the pOpParam*/
+    pTemp = (char*)pComponentPrivate->pOpParam;
+    if (pTemp != NULL) {
+        pTemp -= EXTRA_BYTES;
+    }
+    pComponentPrivate->pOpParam = (UAlgOutBufParamStruct*)pTemp;
+    TIMM_OSAL_Free(pComponentPrivate->pOpParam);
+    AUDIODEC_DPRINT("\nfreeup LCMLParams->pOpParam done\n");
+
 
     /*free the LCMLHandle*/
     /*TIMM_OSAL_Free(pComponentPrivate->LCMLParams->pLcmlHandle);*/
