@@ -149,7 +149,10 @@ typedef enum AUDIO_DEC_COMPONENT_ROLE{
 typedef struct {
   /* Set to 1 if buffer is last buffer */
   unsigned short bLastBuffer;
+  /* Not used in new MP3 SN use only for AAC SN */
   unsigned short bConcealBuffer;
+  /* New parameter added at MP3 SN */
+  unsigned long ulNumInFrames;
 }UAlgInBufParamStruct;
 /* ======================================================================= */
 /**UAlgOutBufParamStruct: This is passed with output buffer to DSP.
@@ -214,6 +217,10 @@ DERIVEDSTRUCT(AUDIODEC_COMPONENT_PRIVATE, OMX_BASE_PRIVATETYPE)
     OMX_AUDIO_PARAM_PORTFORMATTYPE **pPortFormat;\
     /*handle for the RMPrxy call back*/\
     RMPROXY_CALLBACKTYPE rmproxyCallback;\
+    /*pointers to the auxilary info of the buffer that need to be sent to the LCML*/\
+    UAlgInBufParamStruct *pIpParam;\
+    /*pointers to the auxilary info of the buffer that need to be sent to the LCML*/\
+    UAlgOutBufParamStruct *pOpParam;\
     /*OMX_BOOL dasfmode;*/\
     /*flag to bypass DSP when an empty buffer is sent for processing*/  \
     OMX_BOOL bBypassDSP;                                                \

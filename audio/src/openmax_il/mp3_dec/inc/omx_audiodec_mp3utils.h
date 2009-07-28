@@ -136,8 +136,8 @@ typedef enum {
 typedef struct {
     OMX_U32    size;
     long       lOutputFormat; /*To set interleaved/Block format*/
-    long       DownSampleSbr;
-    long       iEnablePS;
+  //long       DownSampleSbr;
+  //long       iEnablePS;
     long       lSamplingRateIdx;
     long       nProfile;
     long       bRawFormat;

@@ -25,7 +25,7 @@ CFLAGS += -I$(OMXINCLUDEDIR) -I$(SYSTEMINCLUDEDIR)
 ifeq ($(OMX_DEBUG), 1)
     CFLAGS += -O0
 else
-#    CFLAGS += -g -ggdb -Werror -DMEMWATCH -DMEMWATCH_STDIO
+    CFLAGS +=
 endif
 
 ifeq ($(OMX_DEBUG), 1)

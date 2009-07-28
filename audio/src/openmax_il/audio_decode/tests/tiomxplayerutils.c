@@ -443,13 +443,14 @@ int test(appPrivateSt *appPrvt){
 
 void alsa_setAudioParams(appPrivateSt *appPrvt) {
   int err;
-
+  snd_pcm_uframes_t period_frames = 100;
   appPrvt->alsaPrvt->device = "default";            /* playback device */
   appPrvt->alsaPrvt->playback_handle = NULL;
   appPrvt->alsaPrvt->hw_params = NULL;
   appPrvt->alsaPrvt->sw_params = NULL;
   appPrvt->alsaPrvt->format = SND_PCM_FORMAT_S16_LE ;   /* sample format */
   appPrvt->alsaPrvt->frames = 0;
+
 
   /* Allocate a hardware parameters object. */
   snd_pcm_hw_params_alloca(&appPrvt->alsaPrvt->hw_params);
@@ -482,6 +483,11 @@ void alsa_setAudioParams(appPrivateSt *appPrvt) {
                                   (unsigned int*)&appPrvt->samplerate,
                                   0);
 
+  /*Setting value for period size to avoid underruns*/
+  snd_pcm_hw_params_set_period_size_near(appPrvt->alsaPrvt->playback_handle,
+                                        appPrvt->alsaPrvt->hw_params,
+                                        &period_frames, 0);
+
   /* Write the parameters to the driver */
   if ((err = snd_pcm_hw_params (appPrvt->alsaPrvt->playback_handle,
                                 appPrvt->alsaPrvt->hw_params)) < 0) {
@@ -489,6 +495,7 @@ void alsa_setAudioParams(appPrivateSt *appPrvt) {
     exit (1);
   }
 
+#if 0
   /* Configure sw pcm params */
   if ((err = snd_pcm_sw_params_malloc(&appPrvt->alsaPrvt->sw_params)) < 0) {
     fprintf (stderr, "cannot allocate software parameters structure (%s)\n",
@@ -505,7 +512,7 @@ void alsa_setAudioParams(appPrivateSt *appPrvt) {
   /* Set min avail frames to consider PCM ready */ 
   if ((err = snd_pcm_sw_params_set_avail_min (appPrvt->alsaPrvt->playback_handle,
                                               appPrvt->alsaPrvt->sw_params,
-                                              OUT_BUFFER_SIZE)) < 0) {
+                                              1024)) < 0) {
     fprintf (stderr, "cannot set minimum available count (%s)\n",
              snd_strerror (err));
     exit (1);
@@ -514,7 +521,7 @@ void alsa_setAudioParams(appPrivateSt *appPrvt) {
      to PCM are >= threshold */
   if ((err = snd_pcm_sw_params_set_start_threshold (appPrvt->alsaPrvt->playback_handle,
                                                     appPrvt->alsaPrvt->sw_params,
-                                                    OUT_BUFFER_SIZE)) < 0) {
+                                                    0)) < 0) {
     fprintf (stderr, "cannot set start mode (%s)\n",
              snd_strerror (err));
     exit (1);
@@ -526,9 +533,8 @@ void alsa_setAudioParams(appPrivateSt *appPrvt) {
              snd_strerror (err));
     exit (1);
   }
-
+#endif
 }
-
 void alsa_pcm_write(appPrivateSt *appPrvt, OMX_BUFFERHEADERTYPE* pBuffer)
 {
   int err;
@@ -551,7 +557,6 @@ void alsa_pcm_write(appPrivateSt *appPrvt, OMX_BUFFERHEADERTYPE* pBuffer)
   if (err == -EPIPE) {
     APP_DPRINT("UNDERRUN\n");
     snd_pcm_prepare(appPrvt->alsaPrvt->playback_handle);
-    //exit(1);
   } else if (err < 0) {
     APP_DPRINT("Error from writei: %s\n", snd_strerror(err));
     exit(1);

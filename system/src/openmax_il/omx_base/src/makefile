@@ -17,7 +17,7 @@ OBJ=$(SRC:.c=.o)
 
 include $(OMXROOT)/Master.mk
 
-CFLAGS+=-I../inc -I../../mm_osal/inc -I$(SYSTEMINCLUDEDIR) -I$(OMXINCLUDEDIR) -I$(BRIDGEINCLUDEDIR) -Wall -fpic -pipe -DOMX_DEBUG -DOMAP_3430
+CFLAGS+=-I../inc -I../../mm_osal/inc -I$(SYSTEMINCLUDEDIR) -I$(OMXINCLUDEDIR)
 ifeq ($(OMX_DEBUG), 1)
     CFLAGS += -O0
 else
@@ -30,7 +30,6 @@ endif
 
 OMXCORE_LIB=$(OMXLIBDIR)/libOMX_Core.so
 COMPONENT_LIB=libOMX_Base.so
-OSAL_LIB=$(OMXLIBDIR)/libmmosal.so
 
 COMPONENT_TARGET=$(OMXLIBDIR)/$(COMPONENT_LIB)
 
@@ -41,7 +40,7 @@ omxcore $(COMPONENT_TARGET): $(COMPONENT_LIB) $(OMXLIBDIR) $(OMXCORE_LIB)
 	cp -f $(COMPONENT_LIB) $(COMPONENT_TARGET)
 
 $(COMPONENT_LIB): $(OBJ)
-	$(CROSS)gcc $(CFLAGS) -shared -o $(COMPONENT_LIB) $(OBJ) -L$(BRIDGELIBDIR) -lbridge -L$(OMXLIBDIR) -lmmosal
+	$(CROSS)gcc $(CFLAGS) -shared -o $(COMPONENT_LIB) $(OBJ) -L$(OMXLIBDIR) -lmmosal
 
 $(SRC): $(HSRC)
 

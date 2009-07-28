@@ -329,9 +329,9 @@ void display_help()
     printf("       -d : If this option is specified, the decoded stream is rendered in DASF, if not it will be rendered in ALSA\n");
     printf("       -c num_channels: To decode in a specific channel number (MONO/STEREO). Default value is STEREO \n");
     printf("       -r sampling rate:  To decode in a specific frequency. Default value is 44100 \n");
-    printf("       -x input buffer amount:  Amount of input buffers, default is 3 \n");
+    printf("       -x input buffer amount:  Amount of input buffers, default is 1 \n");
     printf("       -X input buffer size:  Input buffer size in bytes \n");
-    printf("       -y output buffer amount:  Amount of output buffers, default is 3 \n");
+    printf("       -y output buffer amount:  Amount of output buffers, default is 1 \n");
     printf("       -Y output buffer size:  Output buffer size in bytes \n");
     printf("       -t test_case:  Specify test case number. Default value is 1 (play until EOF) \n");
     printf("       -h : Display help \n");
@@ -508,9 +508,9 @@ appPrivateSt* app_core_new(void){
   me->iterations=1;
   me->channels = 2;
   me->samplerate = 44100;
-  me->nIpBuf = 3;
+  me->nIpBuf = 1;
   me->IpBufSize = IN_BUFFER_SIZE;
-  me->nOpBuf = 3;
+  me->nOpBuf = 1;
   me->OpBufSize = OUT_BUFFER_SIZE;
   me->done_flag = OMX_FALSE;
   me->tc=1; /*play until eof*/

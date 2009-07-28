@@ -242,7 +242,7 @@ static OMX_ERRORTYPE InitMMCodecEx(OMX_HANDLETYPE hInt,
         DSP_ERROR_EXIT(status, "Attach processor", ERROR);
         LCML_DPRINT("DSPProcessor_Attach Successful\n");
         LCML_DPRINT("Base Image is Already Loaded\n");
-
+        /*
         for (dllinfo=0; dllinfo < phandle->dspCodec->NodeInfo.nNumOfDLLs; dllinfo++)
         {
             LCML_DPRINT("%d :: Register Component Node\n",phandle->dspCodec->NodeInfo.AllUUIDs[dllinfo].eDllType);
@@ -251,12 +251,12 @@ static OMX_ERRORTYPE InitMMCodecEx(OMX_HANDLETYPE hInt,
                                                 (char*)phandle->dspCodec->NodeInfo.AllUUIDs[dllinfo].DllName);
             DSP_ERROR_EXIT (status, "Register Component Library", ERROR)
         }
-
+        */
         /* NODE specific data */
         NodeAttrIn.cbStruct = sizeof(struct DSP_NODEATTRIN);
         NodeAttrIn.iPriority = phandle->dspCodec->Priority;
         NodeAttrIn.uTimeout = phandle->dspCodec->Timeout;
-NodeAttrIn.uTimeout = 1000; /* WORKAROUND */       
+        /*NodeAttrIn.uTimeout = 1000;*/ /* WORKAROUND */ /* COMMENTED OUT FOR OMAP4 */
         NodeAttrIn.uProfileID= phandle->dspCodec->ProfileID;
         /* Prepare Create Phase Argument */
         LCML_DPRINT("%d :: Prepare Create Phase Argument \n", __LINE__);
@@ -1421,6 +1421,7 @@ OMX_ERRORTYPE DeleteDspResource(LCML_DSP_INTERFACE *hInterface)
     LCML_DPRINT("%d :: Deleted the node Successfully\n",__LINE__);
 
     LCML_DPRINT("%d :: Entering UnLoadDLLs \n", __LINE__);
+#if 0
     for(dllinfo=0;dllinfo < hInterface->dspCodec->NodeInfo.nNumOfDLLs ;dllinfo++)
     {
         LCML_DPRINT("%d :: Register Component Node\n",hInterface->dspCodec->NodeInfo.AllUUIDs[dllinfo].eDllType);
@@ -1428,7 +1429,7 @@ OMX_ERRORTYPE DeleteDspResource(LCML_DSP_INTERFACE *hInterface)
                                                                                         hInterface->dspCodec->NodeInfo.AllUUIDs[dllinfo].eDllType);
         /*DSP_ERROR_EXIT (status, "Unregister DSP Object, Socket UUID ", EXIT);*/
     }
-
+#endif
     /* detach processor from gpp */
     status = DSPProcessor_Detach(hInterface->dspCodec->hProc);
     DSP_ERROR_EXIT (status, "DeInit: DSP Processor Detach ", EXIT);
