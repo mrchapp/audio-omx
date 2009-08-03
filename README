@@ -1,16 +1,156 @@
 TI OpenMAX Integration Layer project
 
 This is a TI implementation of the  of the OpenMAX Integration Layer
-(IL) API, specified by the Khronos group (see http://www.khronos.org/openmax).
+(IL) API ver. 1.1, specified by the Khronos group (see http://www.khronos.org/openmax).
 
-This branch is composed of:
+This Unified OMX is composed of:
 - audio component(s)
   - OMX audio decoder
+	- MP3 extension role
+	- AAC extension role
 - system component(s)
   - OMX Core
   - LCML (Linux Common Multimedia Library)
   - OMX Base (OMX base component)
   - OSAL (Operating system abstraction layer API)
 
-The system components, Core and LCML, are provided only as a reference.
-More audio components will be added soon.
+The first version of UOMX was developed by TI India MM platforms team
+Authors:
+Aditya Monga
+Radha Purnima Dasari
+
+Introduction
+
+The intent was to prototype the generic OMX-BASE implementation on the
+OMAP3 platform and then extend the same to audio components on the OMAP4
+platform running the Linux OS.
+
+Why OMX-BASE and the associated changes?
+
+Two generic components for audio encode and audio decode have been derived
+from the generic "base" implementation of  OMX1.1.
+
+The OMX-BASE was initially developed for eCosto on the Nucleus RTOS, but is
+written in such a way that it can be easily ported onto other operating
+systems with a rewrite of the OSAL compoment.
+
+With the OMX-BASE writing a new component is less tedious since the
+component writer has to only think about implementing the codec specific
+aspects of the OMX component.
+
+Location of package
+
+You can download the package from:
+http://dev.omapzoom.org/?p=abraham/audio-omx.git;a=summary
+
+Configuration Settings
+
+-  Linux® OS: Linux 24.0.9 2.6.31-rc1
+-  Tools: arm-none-linux-gnueabi-gcc (Sourcery G++ Lite 2008q3-72) 4.3.2
+-  GNU Make version 3.81
+-  File System: Virtio RAMDISK
+-  Hardware   : Virtio 1.09a patch 9
+
+Highlights
+
+- This is the first release of UOMX audio components for OMAP4.
+- MP3/AAC decoding in file to file mode.
+- The test application "tiomxplayer" is provided to test AUDIO.DECODE component
+  with MP3/AAC role.
+
+Known Issues/Limitations
+
+- Currently MP3 and AAC decoding is supported only in stream mode.
+- MP3 UOMX test cases has only been validated using a static baseimage provided
+   by the SN team.
+- AAC UOMX test cases has only been validated using a static baseimage provided
+   by the SN team.
+
+Build Instructions
+
+The code has NOT been integrated into clear case.
+You'll also need ALSA utils and libraries in order to render the test
+application through alsa (alsa libs are also provided).
+For this release L23.17 (LINUX-MMAUDIO_RLS_3.23P5) clearcase baseline was used.
+
+As for this relase UOMX binaries are provided and ready to be integrated into
+a ramdisk. You'll find them on binaries folder.
+
+Genral instruction to compile UOMX on clearcase....
+
+1.	Clone the UOMX git project to your local machine:
+	$ git clone git://dev.omapzoom.org/pub/scm/abraham/audio-omx.git
+2. 	In clearcase export these variables:
+	$ export OMXROOT=/vobs/wtbu/OMAPSW_MPU/linux
+	then create a PKGDIR direcotry and export it's path
+	$ export PKGDIR=/home/<user>/file_system
+	$ export CROSS=arm-none-linux-gnueabi-
+	$ export OMX_RESOURCEMANAGER_DISABLE=1
+	$ export PATH=$PATH:<path_to_your>/arm-2008q3-72/bin/
+
+Building OMX-core
+1.      Replace your /vobs/wtbu/OMAPSW_MPU/linux/system/src/openmax_il/omx_core
+        files with the one you just clone from the git tree audio-omx/system/src/openmax_il/omx_core/
+2. 	Go to /vobs/wtbu/OMAPSW_MPU/linux/system/src/openmax_il/omx_core/ and type:
+	$ make clean all
+
+Building the LCML
+Due to LCML dependencies on Bridge you'll need to copy the Brige libraries needed to compile LCML
+1. 	Create this directory structure:
+	$ mkdir $PKGDIR/target/include/dspbridge/
+2. 	Copy /vobs/wtbu/OMAPSW_MPU/dspbridge/mpu_api/inc/* to your $PKGDIR/target/include/dspbridge/
+	NOTE: You'll also need to have the bridge shared libraries (libbridge.so and libbridge.so.2)
+		  in $PKGDIR/target/include/dspbridge/lib refer to Bridge Release notes on how to complile
+		  these libraries.
+3. 	Replace your /vobs/wtbu/OMAPSW_MPU/linux/system/src/openmax_il/lcml/ files  with the one you just
+	clone from the git tree audio-omx/system/src/openmax_il/lcml/
+4. 	Go to /vobs/wtbu/OMAPSW_MPU/linux/system/src/openmax_il/lcml/ and type:
+	$ make clean all
+
+Building the OSAL layer
+1. 	Copy to your /vobs/wtbu/OMAPSW_MPU/linux/system/src/openmax_il/ directory the mm_osal directory you just
+	clone from the git tree audio-omx/system/src/openmax_il/mm_osal
+2. 	Go to /vobs/wtbu/OMAPSW_MPU/linux/system/src/openmax_il/mm_osal/ and type:
+	$ make clean all
+
+Building the OMX-Base
+1. 	Copy to your /vobs/wtbu/OMAPSW_MPU/linux/system/src/openmax_il/ directory the omx_base directory you just
+	clone from the git tree audio-omx/system/src/openmax_il/omx_base
+2. 	Go to /vobs/wtbu/OMAPSW_MPU/linux/system/src/openmax_il/omx_base/ and type:
+	$ make clean all
+
+Building the audio_decode OMX component
+1. 	Copy to your /vobs/wtbu/OMAPSW_MPU/linux/audio/src/openmax_il directory the audio_decode
+	 directory you just clone from the git tree audio-omx/audio_/src/openmax_il/audio_decode
+2. 	Copy to your /vobs/wtbu/OMAPSW_MPU/linux/audio/src/openmax_il directory the mp3_dec
+	 directory you just clone from the git tree audio-omx/audio_/src/openmax_il/mp3_dec
+3. 	Copy to your /vobs/wtbu/OMAPSW_MPU/linux/audio/src/openmax_il directory the aac_dec
+	 directory you just clone from the git tree audio-omx/audio_/src/openmax_il/aac_dec
+4. 	Go to /vobs/wtbu/OMAPSW_MPU/linux/audio/src/openmax_il/audio_decode and type:
+	$ make clean all
+
+Running on Virtio
+
+- After all compilation takes place copy the next libraries into your Virtio ramdisk
+ a. Copy
+	-OMAPS_MPU/linux/audio/src/openmax_il/audio_decode/src/libOMX.TI.AUDIO.DECODE.so,
+	-OMAPS_MPU/linux/system/src/openmax_il/lcml/src/libLCML.so,
+	-OMAPS_MPU/linux/system/src/openmax_il/omx_base/src/libOMX_Base.so,
+	-OMAPS_MPU/linux/system/src/openmax_il/omx_core/src/libOMX_Core.so
+	-OMAPS_MPU/linux/system/src/openmax_il/mm_osal/src/libmmosal.a
+    into your ramdisk /usr/lib directory.
+
+ b. Copy OMAPS_MPU/linux/audio/src/openmax_il/audio_decode/tests/tiomxplayer into your
+	ramdisk /usb/bin directory
+
+ c. Don't forget ot copy some MP3 test vectors as well.
+
+ d. Boot into Virtio and load MP3 static baseimage.
+
+ e. Run
+    # tiomxplayer -o out.pcm <path_to>/<your_mp3_file>.mp3
+	and wait for the test to finish, you'll see it creates the out.pcm file after.
+
+ f. Play the out.pcm with ALSA
+    # aplay out.pcm -f S16_LE -c <Number_of_Channels> -r <Sample_rate>
+
