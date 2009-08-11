@@ -1,0 +1,12 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: libOMX_Base
+Description: OMX Base
+Version: @VERSION@
+Requires: 
+Libs: -L${libdir} -lOMX_Base
+Cflags: -I${includedir}/omx/base
+
