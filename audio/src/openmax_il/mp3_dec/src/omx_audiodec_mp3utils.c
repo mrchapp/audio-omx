@@ -186,8 +186,8 @@ OMX_ERRORTYPE OMX_MP3_DEC_SetParameter ( OMX_HANDLETYPE hComponent,
     case OMX_IndexParamAudioMp3:
         if(((OMX_AUDIO_PARAM_MP3TYPE *)(ComponentParameterStructure))->nPortIndex ==
            pComponentPrivate->codec_params.mp3decParams->mp3Params->nPortIndex) {
-            TIMM_OSAL_Memcpy(ComponentParameterStructure,
-                             pComponentPrivate->codec_params.mp3decParams->mp3Params,
+            TIMM_OSAL_Memcpy(pComponentPrivate->codec_params.mp3decParams->mp3Params,
+                             ComponentParameterStructure,
                              sizeof(OMX_AUDIO_PARAM_MP3TYPE));
 
         }else {

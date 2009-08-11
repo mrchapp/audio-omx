@@ -189,7 +189,7 @@ OMX_ERRORTYPE OMX_AAC_DEC_SetParameter ( OMX_HANDLETYPE hComponent,
 
             if(((OMX_AUDIO_PARAM_AACPROFILETYPE *)(ComponentParameterStructure))->nPortIndex ==
                pComponentPrivate->codec_params.aacdecParams->aacParams->nPortIndex) {
-                TIMM_OSAL_Memcpy(ComponentParameterStructure, pComponentPrivate->codec_params.aacdecParams->aacParams, sizeof(OMX_AUDIO_PARAM_AACPROFILETYPE));
+                TIMM_OSAL_Memcpy(pComponentPrivate->codec_params.aacdecParams->aacParams, ComponentParameterStructure,sizeof(OMX_AUDIO_PARAM_AACPROFILETYPE));
                 /*need to update the aacdecParms*/
                 if (pComponentPrivate->codec_params.aacdecParams->aacParams->eAACProfile == OMX_AUDIO_AACObjectMain){
                     pComponentPrivate->codec_params.aacdecParams->nProfile = 0;
