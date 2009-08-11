@@ -53,7 +53,6 @@ PKG_CHECK_MODULES([MMOSAL], [libmmosal])
 dnl Check for LCML:
 PKG_CHECK_MODULES([LCML], [libLCML])
 
-
 dnl *** checks for header files ***
 dnl check if we have ANSI C header files
 AC_HEADER_STDC
@@ -69,7 +68,22 @@ dnl *** checks for library functions ***
 dnl *** checks for dependancy libraries ***
 
 dnl *** set variables based on configure arguments ***
-
+dnl check for enabled testapp build
+AC_ARG_ENABLE(tests,
+        AC_HELP_STRING([--enable-tests], [Build test app(s) (default: disabled)]),
+        [case "${enableval}" in
+              yes) enable_tests=true ;;
+              no)  enable_tests=false ;;
+              *) AC_MSG_ERROR(bad value ${enableval} for --enable-tests)
+                ;;
+        esac], [enable_tests=false])
+if test "x$enable_tests" = "xtrue"; then
+    PKG_CHECK_MODULES([ALSA], [alsa], [], [
+        echo "*** ALSA not found, but is required for testapp.. disabling testapp"
+        enable_tests=false
+    ])
+fi
+AM_CONDITIONAL([BUILD_TESTS], test "x$enable_tests" = "xtrue")
 
 AC_CONFIG_FILES([
 libOMX.TI.AUDIO.DECODE.pc
@@ -80,5 +94,6 @@ aac_dec/Makefile
 aac_dec/src/Makefile
 mp3_dec/Makefile
 mp3_dec/src/Makefile
+tests/Makefile
 ])
 AC_OUTPUT
