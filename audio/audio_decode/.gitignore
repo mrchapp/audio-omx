@@ -11,11 +11,7 @@ libtool
 *.pc
 config.log
 config.status
-config/config.guess
-config/config.sub
-config/depcomp
-config/install-sh
-config/missing
+config
 configure
 tiomxplayer
 

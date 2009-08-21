@@ -16,7 +16,7 @@ if BUILD_TESTS
   tiomxplayer_LDADD      = tests/libtiomxplayer.la
 endif
 
-libOMX_TI_AUDIO_DECODE_includedir   = $(includedir)/omx/audio_decode
+libOMX_TI_AUDIO_DECODE_la_includedir   = $(includedir)/omx/audio_decode
 
 pkgconfig_DATA          = libOMX.TI.AUDIO.DECODE.pc
 pkgconfigdir            = $(libdir)/pkgconfig
