@@ -7,6 +7,6 @@ Name: libLCML
 Description: LCML
 Version: @VERSION@
 Requires: libdspbridge
-Libs: -L${libdir} -lLCML
+Libs: -L${libdir} -lLCML -lpthread
 Cflags: -I${includedir}/omx/lcml
 
