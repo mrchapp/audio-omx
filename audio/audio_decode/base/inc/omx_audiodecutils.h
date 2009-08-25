@@ -32,9 +32,8 @@
     fprintf(stdout, __VA_ARGS__);                                       \
     fprintf(stdout, "\n");
 #else
-#define AUDIODEC_DPRINT(...)
+#define AUDIODEC_DPRINT(...)  OMX_BASE_Trace(__VA_ARGS__);
 #endif
-
 
 
 /******************************************************************************

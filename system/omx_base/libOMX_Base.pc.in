@@ -6,7 +6,7 @@ includedir=@includedir@
 Name: libOMX_Base
 Description: OMX Base
 Version: @VERSION@
-Requires: 
+Requires: @TTIF_REQUIRES@
 Libs: -L${libdir} -lOMX_Base
-Cflags: -I${includedir}/omx/base
+Cflags: -I${includedir}/omx/base @TTIF_TRACES@
 

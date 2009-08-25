@@ -65,6 +65,31 @@
     if(_ptr) { TIMM_OSAL_Free(_ptr); \
          _ptr = NULL; }
 
+#define OMX_LOG_OVER_TTIF 1 /*XXX*/
+
+#ifdef OMX_LOG_OVER_TTIF
+#  include <string.h>
+#  include <ttif_trace.h>
+static TTIF_TRACE_ID __get_trace_id( char *file ) {
+    static TTIF_TRACE_ID trace_id = TTIF_TRACE_INVALID_ID;
+    if( trace_id == TTIF_TRACE_INVALID_ID ) {
+        char *name = strrchr( file, '/');
+        if(!name) name = strrchr( file, '\\');
+        if(!name) name = file;
+        else      name++;
+        trace_id = ttif_trace_open(name);
+    }
+    return trace_id;
+}
+#  define OMX_BASE_Error(ARGS,...)   do {\
+     ttif_trace_fprintf(__get_trace_id(__FILE__), 0xffffffff, "ERROR: "ARGS,##__VA_ARGS__); \
+     TIMM_OSAL_TraceFunction("\nERROR:%s[%d]"ARGS"\n", __FILE__, __LINE__ ,##__VA_ARGS__); \
+   } while(0)
+#  define OMX_BASE_Trace(...)   ttif_trace_fprintf(__get_trace_id(__FILE__), 0x1, __VA_ARGS__)
+#  define OMX_BASE_Entering()   ttif_trace_fprintf(__get_trace_id(__FILE__), 0x2, "ENTERING")
+#  define OMX_BASE_Exiting(ARG) ttif_trace_fprintf(__get_trace_id(__FILE__), 0x2, "EXITING, Returned(%d)", ARG)
+
+#else
 /**=========================================================================**/
 /**
  * @def OMX_BASE_Trace  - Trace macros
@@ -94,6 +119,8 @@
 #define OMX_BASE_Entering()
 #define OMX_BASE_Exiting(ARG)
 #endif
+
+#endif /* OMX_LOG_OVER_TTIF */
 
 /**=========================================================================**/
 /**

@@ -47,6 +47,22 @@ PKG_CHECK_MODULES([OMXCORE], [libOMX_Core])
 dnl Check for OMX mm_osal
 PKG_CHECK_MODULES([MMOSAL], [libmmosal])
 
+dnl Check for TTIF (which is optional, so we'll specify ACTION-IF-FOUND and
+dnl ACTION-IF-NOT-FOUND to override the default ACTION-IF-NOT-FOUND, which
+dnl is fatal error):
+PKG_CHECK_MODULES([TTIF], [libttif], [
+	echo "TTIF found, enabling TTIF traces"
+	TTIF_TRACES=-DOMX_LOG_OVER_TTIF=1
+	TTIF_REQUIRES=libttif
+], [
+	echo "TTIF not found, disabling TTIF traces"
+	TTIF_TRACES=
+	TTIF_REQUIRES=
+])
+AC_SUBST(TTIF_TRACES)
+AC_SUBST(TTIF_REQUIRES)
+
+
 
 dnl *** checks for header files ***
 dnl check if we have ANSI C header files
