@@ -2,7 +2,7 @@
 
 SUBDIRS                 = src
 
-lib_LTLIBRARIES         = libbase.la
+noinst_LTLIBRARIES      = libbase.la
 
 libbase_la_SOURCES      = 
 libbase_la_LDFLAGS      = -no-undefined

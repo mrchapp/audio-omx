@@ -2,7 +2,7 @@
 
 SUBDIRS                 = src
 
-lib_LTLIBRARIES         = libaac_dec.la
+noinst_LTLIBRARIES      = libaac_dec.la
 
 libaac_dec_la_SOURCES   = 
 libaac_dec_la_LDFLAGS   = -no-undefined

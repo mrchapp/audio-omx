@@ -2,7 +2,7 @@
 
 SUBDIRS                 = src
 
-lib_LTLIBRARIES         = libmp3_dec.la
+noinst_LTLIBRARIES      = libmp3_dec.la
 
 libmp3_dec_la_SOURCES   = 
 libmp3_dec_la_LDFLAGS   = -no-undefined
