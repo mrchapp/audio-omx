@@ -31,8 +31,10 @@
 #define AUDIODEC_DPRINT(...)  fprintf(stdout, "%s %d::  ",__FUNCTION__, __LINE__); \
     fprintf(stdout, __VA_ARGS__);                                       \
     fprintf(stdout, "\n");
-#else
+#elseif OMX_LOG_OVER_TTIF
 #define AUDIODEC_DPRINT(...)  OMX_BASE_Trace(__VA_ARGS__);
+#else
+#define AUDIODEC_DPRINT(...)
 #endif
 
 
@@ -233,6 +235,12 @@ DERIVEDSTRUCT(AUDIODEC_COMPONENT_PRIVATE, OMX_BASE_PRIVATETYPE)
     OMX_BOOL bMarkDataIn;\
     OMX_STRING* sDeviceString;\
     /*OMX_U32 streamID;*/ \
+    /**Keep buffer timestamp*/\
+    OMX_TICKS BufTimeStamp[MAX_NUM_OF_BUFS];  \
+    /** Index to arrBufTimeStamp[], used for input buffer timestamps */\
+    OMX_U8 nIpBufindex;\
+    /* Index to arrBufTimeStamp[], used for output buffer timestamps  */\
+    OMX_U8 nOpBufindex;\
     /*LCML parameters*/\
     LCMLParams* LCMLParams;\
     /*union containinig the Audiodec i/p parameters*/\
@@ -270,4 +278,9 @@ OMX_ERRORTYPE OMX_AUDIO_ENC_COMMON_GetExtensionIndex(OMX_HANDLETYPE hComponent,
 
 OMX_ERRORTYPE _OMX_AUDIO_DEC_ReturnPendingBuffers(OMX_HANDLETYPE hComponent ,
                                                   OMX_AUDIODEC_PIPE_TYPE pipe, OMX_U32 Dir);
+void OMX_AUDIO_DEC_StoreInputTimeStamp( AUDIODEC_COMPONENT_PRIVATE *pComponentPrivate,
+                                        OMX_BUFFERHEADERTYPE* pBufHeader );
+
+void OMX_AUDIO_DEC_RetrieveOutputTimeStamp( AUDIODEC_COMPONENT_PRIVATE *pComponentPrivate,
+                                            OMX_BUFFERHEADERTYPE* pBufHeader );
 #endif

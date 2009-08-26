@@ -379,6 +379,8 @@ OMX_ERRORTYPE OMX_ComponentInit(OMX_HANDLETYPE hComponent)
     pComponentPrivate->bMarkDataIn=OMX_FALSE;
     pComponentPrivate->bBypassDSP=OMX_FALSE;
     /*pComponentPrivate->dasfmode=OMX_FALSE;*/
+    pComponentPrivate->nIpBufindex = 0;
+    pComponentPrivate->nOpBufindex = 0;
 
     /*initializing the memory for the sDeviceString*/
     pComponentPrivate->sDeviceString = (OMX_STRING *)
@@ -1560,6 +1562,8 @@ OMX_ERRORTYPE OMX_AUDIO_DEC_DataNotify( OMX_HANDLETYPE hComponent,
                             pComponentPrivate->bMarkDataIn=1;/*flag indicating that need to copy the mark data to the nxt coming o/p buffer*/
                         }
                     }
+                    /* store incomming time stamp */
+                    OMX_AUDIO_DEC_StoreInputTimeStamp( pComponentPrivate, pBufHeader );
                     /*keeping the buffers the we r going to send to the LCML in LCML pipe*/
                     AUDIODEC_DPRINT("\n keeping the LCMLsending i/p buffers in LCMLi/ppedndingqueue \n");
                     tError = (OMX_ERRORTYPE)TIMM_OSAL_WriteToPipe((pComponentPrivate->
@@ -1661,6 +1665,7 @@ OMX_ERRORTYPE OMX_AUDIO_DEC_DataNotify( OMX_HANDLETYPE hComponent,
                     AUDIODEC_DPRINT("\n data notify:bypassingdsp for the corresponding o/p buffer\n");
                     /*by pass DSP ==1;
                       need to sent the corresponding o/p buffer without sending it for processing*/
+                    OMX_AUDIO_DEC_RetrieveOutputTimeStamp( pComponentPrivate, pOutBufHeader );
                     pComponentPrivate->fpReturnDataNotify(hComponent,OUTPUT_PORT, pOutBufHeader);
 
                 }
@@ -1754,8 +1759,9 @@ OMX_ERRORTYPE OMX_AUDIO_DEC_LCML_Callback (TUsnCodecEvent event,void * args [10]
             }
             /*notify the event to the base via returndatanotify*/
             AUDIODEC_DPRINT("\ndata notify to the base:o/p buffer at LCML call back\n");
-            pComponentPrivate->fpReturnDataNotify(pComponentPrivate->pHandle,OUTPUT_PORT, pOutBufHeader);
             /*IF time stamp information is needed need to add that here...*/
+            OMX_AUDIO_DEC_RetrieveOutputTimeStamp( pComponentPrivate, pOutBufHeader );
+            pComponentPrivate->fpReturnDataNotify(pComponentPrivate->pHandle,OUTPUT_PORT, pOutBufHeader);
         }
         /**************************************EMMCodecBufferProcessed*******************************************************/
     break;
