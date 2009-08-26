@@ -1,25 +1,5 @@
-
-/*
- * Copyright (C) Texas Instruments - http://www.ti.com/
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- */
 /**
- * Copyright (c) 2005 The Khronos Group Inc. 
+ * Copyright (c) 2008 The Khronos Group Inc. 
  * 
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -42,7 +22,7 @@
  */
 
 /** 
- * @file OMX_IVCommon.h - OpenMax IL version 1.1
+ * @file OMX_IVCommon.h - OpenMax IL version 1.1.2
  *  The structures needed by Video and Image components to exchange
  *  parameters and configuration data with the components.
  */
@@ -58,8 +38,8 @@ extern "C" {
  * to compile without errors.  The includes below are required for this header
  * file to compile successfully 
  */
-#include <OMX_Types.h>
-#include <OMX_Core.h>
+
+#include <omx_core.h>
 
 /** @defgroup iv OpenMAX IL Imaging and Video Domain
  * Common structures for OpenMAX IL Imaging and Video domains
@@ -150,6 +130,8 @@ typedef enum OMX_COLOR_FORMATTYPE {
     OMX_COLOR_Format18BitBGR666,
     OMX_COLOR_Format24BitARGB6666,
     OMX_COLOR_Format24BitABGR6666,
+    OMX_COLOR_FormatKhronosExtensions = 0x6F000000, /**< Reserved region for introducing Khronos Standard Extensions */ 
+    OMX_COLOR_FormatVendorStartUnused = 0x7F000000, /**< Reserved region for introducing Vendor Extensions */
     OMX_COLOR_FormatMax = 0x7FFFFFFF
 } OMX_COLOR_FORMATTYPE;
 
@@ -197,6 +179,8 @@ typedef enum OMX_IMAGEFILTERTYPE {
     OMX_ImageFilterAntialias, 
     OMX_ImageFilterDeRing,       
     OMX_ImageFilterSolarize,
+    OMX_ImageFilterKhronosExtensions = 0x6F000000, /**< Reserved region for introducing Khronos Standard Extensions */ 
+    OMX_ImageFilterVendorStartUnused = 0x7F000000, /**< Reserved region for introducing Vendor Extensions */
     OMX_ImageFilterMax = 0x7FFFFFFF
 } OMX_IMAGEFILTERTYPE;
 
@@ -281,6 +265,8 @@ typedef enum OMX_COLORBLENDTYPE {
     OMX_ColorBlendAnd,
     OMX_ColorBlendOr,
     OMX_ColorBlendInvert,
+    OMX_ColorBlendKhronosExtensions = 0x6F000000, /**< Reserved region for introducing Khronos Standard Extensions */ 
+    OMX_ColorBlendVendorStartUnused = 0x7F000000, /**< Reserved region for introducing Vendor Extensions */
     OMX_ColorBlendMax = 0x7FFFFFFF
 } OMX_COLORBLENDTYPE;
 
@@ -354,6 +340,8 @@ typedef enum OMX_MIRRORTYPE {
     OMX_MirrorVertical,
     OMX_MirrorHorizontal,
     OMX_MirrorBoth, 
+    OMX_MirrorKhronosExtensions = 0x6F000000, /**< Reserved region for introducing Khronos Standard Extensions */ 
+    OMX_MirrorVendorStartUnused = 0x7F000000, /**< Reserved region for introducing Vendor Extensions */
     OMX_MirrorMax = 0x7FFFFFFF   
 } OMX_MIRRORTYPE;
 
@@ -469,6 +457,8 @@ typedef enum OMX_WHITEBALCONTROLTYPE {
     OMX_WhiteBalControlIncandescent,
     OMX_WhiteBalControlFlash,
     OMX_WhiteBalControlHorizon,
+    OMX_WhiteBalControlKhronosExtensions = 0x6F000000, /**< Reserved region for introducing Khronos Standard Extensions */ 
+    OMX_WhiteBalControlVendorStartUnused = 0x7F000000, /**< Reserved region for introducing Vendor Extensions */
     OMX_WhiteBalControlMax = 0x7FFFFFFF
 } OMX_WHITEBALCONTROLTYPE;
 
@@ -504,6 +494,8 @@ typedef enum OMX_EXPOSURECONTROLTYPE {
     OMX_ExposureControlBeach,
     OMX_ExposureControlLargeAperture,
     OMX_ExposureControlSmallApperture,
+    OMX_ExposureControlKhronosExtensions = 0x6F000000, /**< Reserved region for introducing Khronos Standard Extensions */ 
+    OMX_ExposureControlVendorStartUnused = 0x7F000000, /**< Reserved region for introducing Vendor Extensions */
     OMX_ExposureControlMax = 0x7FFFFFFF
 } OMX_EXPOSURECONTROLTYPE;
 
@@ -708,6 +700,8 @@ typedef enum OMX_TRANSITIONEFFECTTYPE {
     OMX_EffectDissolve,
     OMX_EffectWipe,
     OMX_EffectUnspecifiedMixOfTwoScenes,
+    OMX_EffectKhronosExtensions = 0x6F000000, /**< Reserved region for introducing Khronos Standard Extensions */ 
+    OMX_EffectVendorStartUnused = 0x7F000000, /**< Reserved region for introducing Vendor Extensions */
     OMX_EffectMax = 0x7FFFFFFF
 } OMX_TRANSITIONEFFECTTYPE;
 
@@ -739,6 +733,8 @@ typedef enum OMX_DATAUNITTYPE {
     OMX_DataUnitVideoSegment,
     OMX_DataUnitSeveralSegments,
     OMX_DataUnitArbitraryStreamSection,
+    OMX_DataUnitKhronosExtensions = 0x6F000000, /**< Reserved region for introducing Khronos Standard Extensions */ 
+    OMX_DataUnitVendorStartUnused = 0x7F000000, /**< Reserved region for introducing Vendor Extensions */
     OMX_DataUnitMax = 0x7FFFFFFF
 } OMX_DATAUNITTYPE;
 
@@ -752,6 +748,8 @@ typedef enum OMX_DATAUNITENCAPSULATIONTYPE {
     OMX_DataEncapsulationElementaryStream,
     OMX_DataEncapsulationGenericPayload,
     OMX_DataEncapsulationRtpPayload,
+    OMX_DataEncapsulationKhronosExtensions = 0x6F000000, /**< Reserved region for introducing Khronos Standard Extensions */ 
+    OMX_DataEncapsulationVendorStartUnused = 0x7F000000, /**< Reserved region for introducing Vendor Extensions */
     OMX_DataEncapsulationMax = 0x7FFFFFFF
 } OMX_DATAUNITENCAPSULATIONTYPE;
 
@@ -776,6 +774,8 @@ typedef enum OMX_DITHERTYPE {
     OMX_DitherOrdered,
     OMX_DitherErrorDiffusion,
     OMX_DitherOther,
+    OMX_DitherKhronosExtensions = 0x6F000000, /**< Reserved region for introducing Khronos Standard Extensions */ 
+    OMX_DitherVendorStartUnused = 0x7F000000, /**< Reserved region for introducing Vendor Extensions */
     OMX_DitherMax = 0x7FFFFFFF
 } OMX_DITHERTYPE;
 
@@ -811,7 +811,9 @@ typedef enum OMX_METERINGTYPE {
     OMX_MeteringModeSpot,  	      /**< Spot (partial) metering. */
     OMX_MeteringModeMatrix,      /**< Matrix or evaluative metering. */
  
-    OMX_EVModeMax = 0x7ffffff
+    OMX_MeteringKhronosExtensions = 0x6F000000, /**< Reserved region for introducing Khronos Standard Extensions */ 
+    OMX_MeteringVendorStartUnused = 0x7F000000, /**< Reserved region for introducing Vendor Extensions */
+    OMX_EVModeMax = 0x7fffffff
 } OMX_METERINGTYPE;
  
 typedef struct OMX_CONFIG_EXPOSUREVALUETYPE {
@@ -869,6 +871,8 @@ typedef enum OMX_FOCUSSTATUSTYPE {
     OMX_FocusStatusReached,
     OMX_FocusStatusUnableToReach,
     OMX_FocusStatusLost,
+    OMX_FocusStatusKhronosExtensions = 0x6F000000, /**< Reserved region for introducing Khronos Standard Extensions */ 
+    OMX_FocusStatusVendorStartUnused = 0x7F000000, /**< Reserved region for introducing Vendor Extensions */
     OMX_FocusStatusMax = 0x7FFFFFFF
 } OMX_FOCUSSTATUSTYPE;
 
