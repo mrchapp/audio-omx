@@ -44,7 +44,9 @@
 #include <OMX_Types.h>
 #include <OMX_Index.h>
 
+#ifdef RESOURCE_MANAGER_ENABLED
 #include <ResourceManagerProxyAPI.h>
+#endif
 #include "usn.h"
 #include <omx_base.h>
 #include <timm_osal_interfaces.h>
@@ -111,8 +113,10 @@ static OMX_ERRORTYPE OMX_AUDIO_DEC_GetExtensionIndex(OMX_IN  OMX_HANDLETYPE hCom
 
 OMX_ERRORTYPE OMX_AUDIO_DEC_LCML_Callback (TUsnCodecEvent event,void * args [10]);
 
+#ifdef RESOURCE_MANAGER_ENABLED
 void OMX_AUDIO_DEC_ResourceManagerCallback(RMPROXY_COMMANDDATATYPE cbData);
 
+#endif
 static OMX_HANDLETYPE OMX_AUDIO_DEC_GetLCMLHandle(AUDIODEC_COMPONENT_PRIVATE* pComponentPrivate);
 
 OMX_ERRORTYPE OMX_LCML_DeInit(OMX_HANDLETYPE pComponent);
@@ -2028,6 +2032,7 @@ OMX_ERRORTYPE OMX_AUDIO_DEC_LCML_Callback (TUsnCodecEvent event,void * args [10]
  EXIT:
     return tError;
 }
+#ifdef RESOURCE_MANAGER_ENABLED
 /* ================================================================================= * */
 /*
 *@fn OMX_AUDIO_DEC_ResourceManagerCallback():   function is callback which is called by RM whenever
@@ -2080,9 +2085,10 @@ void OMX_AUDIO_DEC_ResourceManagerCallback(RMPROXY_COMMANDDATATYPE cbData)
         }
     }
 }
+#endif
 /* ========================================================================== */
 /**
- * @fn OMX_JPEG_DEC_ComponentDeInit - Deinitialize Component. This method will clean all
+ * @fn OMX_AUDIO_DEC_ComponentDeInit - Deinitialize Component. This method will clean all
  *  resources in the component
  * @param hComponent - handle for this instance of the component
  * @return: OMX_ERRORTYPE

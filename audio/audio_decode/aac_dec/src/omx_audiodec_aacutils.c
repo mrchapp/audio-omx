@@ -45,14 +45,12 @@
 #include <omx_base_internal.h> 
 #include <timm_osal_interfaces.h>
 #include <omx_base_utils.h>
-#include <ResourceManagerProxyAPI.h>
 #include "TIDspOmx.h"
 #include "LCML_DspCodec.h"
 #include <usn.h>
 #include "aacdecsocket_ti.h"
 #include <decode_common_ti.h>
 
-//#include "omx_audiodec_aacutils.h"
 #include "omx_audiodecutils.h"
 /* ================================================================================= */
 /**

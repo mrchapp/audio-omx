@@ -65,7 +65,7 @@
     if(_ptr) { TIMM_OSAL_Free(_ptr); \
          _ptr = NULL; }
 
-#define OMX_LOG_OVER_TTIF 1 /*XXX*/
+//#define OMX_LOG_OVER_TTIF 1 /*XXX*/
 
 #ifdef OMX_LOG_OVER_TTIF
 #  include <string.h>

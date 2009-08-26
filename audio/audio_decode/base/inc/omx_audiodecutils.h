@@ -44,7 +44,9 @@
 /**-------------------------program files ----------------------------------**/
 #include <OMX_Component.h>
 #include <omx_base.h>
+#ifdef RESOURCE_MANAGER_ENABLED
 #include <ResourceManagerProxyAPI.h>
+#endif
 #include "omx_audiodec_mp3utils.h"
 #include "omx_audiodec_aacutils.h"
 
@@ -215,7 +217,7 @@ DERIVEDSTRUCT(AUDIODEC_COMPONENT_PRIVATE, OMX_BASE_PRIVATETYPE)
     /*struct contains the info related to the port formats*/\
     OMX_AUDIO_PARAM_PORTFORMATTYPE **pPortFormat;\
     /*handle for the RMPrxy call back*/\
-    RMPROXY_CALLBACKTYPE rmproxyCallback;\
+    /*RMPROXY_CALLBACKTYPE rmproxyCallback;*/                           \
     /*pointers to the auxilary info of the buffer that need to be sent to the LCML*/\
     UAlgInBufParamStruct *pIpParam;\
     /*pointers to the auxilary info of the buffer that need to be sent to the LCML*/\

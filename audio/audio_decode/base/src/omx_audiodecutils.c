@@ -43,7 +43,6 @@
 #include <omx_base.h>
 #include <timm_osal_interfaces.h>
 #include <omx_base_utils.h>
-#include <ResourceManagerProxyAPI.h>
 #include "TIDspOmx.h"
 #include "LCML_DspCodec.h"
 
