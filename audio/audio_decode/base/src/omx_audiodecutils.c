@@ -519,6 +519,7 @@ OMX_ERRORTYPE _OMX_AUDIO_DEC_ReturnPendingBuffers(OMX_HANDLETYPE hComponent ,
                     OMX_BASE_ASSERT(pOutBufHeader != NULL, 
                                     OMX_ErrorInsufficientResources);
                     elementsOutPipe--;
+                    OMX_AUDIO_DEC_RetrieveOutputTimeStamp( pComponentPrivate, pOutBufHeader );
                     pComponentPrivate->fpReturnDataNotify(hComponent, 
                                        OUTPUT_PORT, pOutBufHeader);
                 }
@@ -565,6 +566,7 @@ OMX_ERRORTYPE _OMX_AUDIO_DEC_ReturnPendingBuffers(OMX_HANDLETYPE hComponent ,
                     OMX_BASE_ASSERT(pOutBufHeader != NULL, 
                                     OMX_ErrorInsufficientResources);
                     elementsInPipe--;
+                    OMX_AUDIO_DEC_RetrieveOutputTimeStamp( pComponentPrivate, pOutBufHeader );
                     pComponentPrivate->fpReturnDataNotify(hComponent, 
                                                           OUTPUT_PORT, 
                                                           pOutBufHeader);
@@ -576,5 +578,48 @@ EXIT:
     return tError;
 }   
     
+
+
+
+void OMX_AUDIO_DEC_StoreInputTimeStamp( AUDIODEC_COMPONENT_PRIVATE *pComponentPrivate,
+                                        OMX_BUFFERHEADERTYPE* pBufHeader )
+{
+	/* store timestamp: */
+	pComponentPrivate->pBufTimeStamp[ pComponentPrivate->nIpBufindex ] = pBufHeader->nTimeStamp;
+	pComponentPrivate->nIpBufindex++;
+
+	if( pComponentPrivate->nIpBufindex > pComponentPrivate->nBufTimeStampLen )
+	{
+		pComponentPrivate->nIpBufindex = 0;
+	}
+
+	/* sanity checking: */
+	if( pComponentPrivate->nIpBufindex == pComponentPrivate->nOpBufindex )
+	{
+		AUDIODEC_DPRINT("\n warning, pBufTimeStamp circular buffer overflow!!!\n");
+	}
+}
+
+void OMX_AUDIO_DEC_RetrieveOutputTimeStamp( AUDIODEC_COMPONENT_PRIVATE *pComponentPrivate,
+                                            OMX_BUFFERHEADERTYPE* pBufHeader )
+
+{
+	/* sanity checking: */
+	if( pComponentPrivate->nIpBufindex == pComponentPrivate->nOpBufindex )
+	{
+		AUDIODEC_DPRINT("\n warning, pBufTimeStamp circular buffer underflow!!!\n");
+	}
+
+	/* retrieve timestamp: */
+	pBufHeader->nTimeStamp = pComponentPrivate->pBufTimeStamp[ pComponentPrivate->nOpBufindex ];
+	pComponentPrivate->nOpBufindex++;
+
+	/* handle roll-over: */
+	if( pComponentPrivate->nOpBufindex > pComponentPrivate->nBufTimeStampLen )
+	{
+		pComponentPrivate->nOpBufindex = 0;
+	}
+}
+
     
 

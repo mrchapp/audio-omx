@@ -398,6 +398,7 @@ OMX_ERRORTYPE OMX_MP3_DEC_InitParams(OMX_HANDLETYPE hComponent)
     OMX_AUDIO_PARAM_PORTFORMATTYPE *pPortFormat = NULL;
     OMX_AUDIO_PARAM_MP3TYPE *mp3dec_ip = NULL;
     
+    AUDIODEC_DPRINT("\nInitialize MP3 Params\n");
     
     /* Check for valid component private handle */
     OMX_BASE_REQUIRE((((OMX_COMPONENTTYPE*)hComponent)->pComponentPrivate) != NULL, OMX_ErrorBadParameter);

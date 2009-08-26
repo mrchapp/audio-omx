@@ -1243,6 +1243,14 @@ OMX_ERRORTYPE OMX_AUDIO_DEC_CommandNotify(OMX_HANDLETYPE hComponent,
                 case OMX_StateExecuting:
                     /*StateExecuting case starts*/
                     if ( pComponentPrivate->tCurState == OMX_StateIdle) {
+
+                        pComponentPrivate->nBufTimeStampLen = 8;  /* XXX is there an upper limit on number of buffers passed to DSP but not received back?? */
+                        /* XXX this buffer should be freed somewhere */
+                        pComponentPrivate->pBufTimeStamp = TIMM_OSAL_Malloc(sizeof(OMX_S64) *
+                                pComponentPrivate->nBufTimeStampLen + 1);
+                        pComponentPrivate->nIpBufindex = 0;
+                        pComponentPrivate->nOpBufindex = 0;
+
                         switch(pComponentPrivate->eComponentRole){
                             case AAC_DECODE:
                                 AUDIODEC_DPRINT("\n initialize the SN : OMX_CommandStateSet->OMX_Executing<-idle:\n");
@@ -1458,6 +1466,8 @@ OMX_ERRORTYPE OMX_AUDIO_DEC_DataNotify( OMX_HANDLETYPE hComponent,
       then do the processing if it is there in executing */
     if(nPortIndex == INPUT_PORT)
     {
+        OMX_AUDIO_DEC_StoreInputTimeStamp( pComponentPrivate, pBufHeader );
+
         AUDIODEC_DPRINT("\n write the i/p buffer in i/p pipe\n");
         tError = (OMX_ERRORTYPE)TIMM_OSAL_WriteToPipe
             ((pComponentPrivate->pInDataPipe),
@@ -1657,6 +1667,7 @@ OMX_ERRORTYPE OMX_AUDIO_DEC_DataNotify( OMX_HANDLETYPE hComponent,
                     AUDIODEC_DPRINT("\n data notify:bypassingdsp for the corresponding o/p buffer\n");
                     /*by pass DSP ==1;
                       need to sent the corresponding o/p buffer without sending it for processing*/
+                    OMX_AUDIO_DEC_RetrieveOutputTimeStamp( pComponentPrivate, pOutBufHeader );
                     pComponentPrivate->fpReturnDataNotify(hComponent,OUTPUT_PORT, pOutBufHeader);
 
                 }
@@ -1750,6 +1761,7 @@ OMX_ERRORTYPE OMX_AUDIO_DEC_LCML_Callback (TUsnCodecEvent event,void * args [10]
             }
             /*notify the event to the base via returndatanotify*/
             AUDIODEC_DPRINT("\ndata notify to the base:o/p buffer at LCML call back\n");
+            OMX_AUDIO_DEC_RetrieveOutputTimeStamp( pComponentPrivate, pOutBufHeader );
             pComponentPrivate->fpReturnDataNotify(pComponentPrivate->pHandle,OUTPUT_PORT, pOutBufHeader);
             /*IF time stamp information is needed need to add that here...*/
         }

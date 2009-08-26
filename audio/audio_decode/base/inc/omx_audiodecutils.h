@@ -36,6 +36,7 @@
 #endif
 
 
+
 /******************************************************************************
  * INCLUDE FILES
  *****************************************************************************/
@@ -225,6 +226,13 @@ DERIVEDSTRUCT(AUDIODEC_COMPONENT_PRIVATE, OMX_BASE_PRIVATETYPE)
     OMX_BOOL bBypassDSP;                                                \
     /*flag to handle port disable and StateIdle commands*/              \
     OMX_U16 bNoIdleOnStop;\
+    /**Keep buffer timestamp*/\
+    OMX_S64 *pBufTimeStamp;\
+    OMX_U8 nBufTimeStampLen;\
+    /** Index to arrBufTimeStamp[], used for input buffer timestamps */\
+    OMX_U8 nIpBufindex;\
+    /* Index to arrBufTimeStamp[], used for output buffer timestamps  */\
+    OMX_U8 nOpBufindex;\
     /*flag to indicate that EOF has been arrived at i/p*/\
     OMX_BOOL bIsEOFSent;\
     /*flag to indicate that Marked buffer has arrived at i/p*/\
@@ -268,4 +276,12 @@ OMX_ERRORTYPE OMX_AUDIO_ENC_COMMON_GetExtensionIndex(OMX_HANDLETYPE hComponent,
 
 OMX_ERRORTYPE _OMX_AUDIO_DEC_ReturnPendingBuffers(OMX_HANDLETYPE hComponent ,
                                                   OMX_AUDIODEC_PIPE_TYPE pipe, OMX_U32 Dir);
+
+
+void OMX_AUDIO_DEC_StoreInputTimeStamp( AUDIODEC_COMPONENT_PRIVATE *pComponentPrivate,
+                                        OMX_BUFFERHEADERTYPE* pBufHeader );
+
+void OMX_AUDIO_DEC_RetrieveOutputTimeStamp( AUDIODEC_COMPONENT_PRIVATE *pComponentPrivate,
+                                            OMX_BUFFERHEADERTYPE* pBufHeader );
+
 #endif

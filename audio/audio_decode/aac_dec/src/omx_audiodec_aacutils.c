@@ -481,6 +481,7 @@ OMX_ERRORTYPE OMX_AAC_DEC_InitParams(OMX_HANDLETYPE hComponent)
     OMX_AUDIO_PARAM_PORTFORMATTYPE *pPortFormat = NULL;
     OMX_AUDIO_PARAM_AACPROFILETYPE *aacdec_ip = NULL;
     
+    AUDIODEC_DPRINT("\nInitialize AAC Params\n");
     
     /* Check for valid component private handle */
     OMX_BASE_REQUIRE((((OMX_COMPONENTTYPE*)hComponent)->pComponentPrivate) != NULL, OMX_ErrorBadParameter);
