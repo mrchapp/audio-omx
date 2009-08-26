@@ -12,6 +12,7 @@
 
 #include <error.h>
 #include <OMX_Core.h>
+#include <OMX_Component.h>
 #include <unistd.h>
 #include <getopt.h>
 #include <alsa/asoundlib.h>
